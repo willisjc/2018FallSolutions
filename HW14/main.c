@@ -33,7 +33,7 @@ void LinkedListPrint(Node * * source)
 
 // Modify the following function
 #ifdef TEST_MAIN
-
+void LinkedListFree(Node * * head);
 int main(int argc, char **argv)
 {
   // if argc is less than 2 then, return EXIT_FAILURE
