@@ -19,20 +19,20 @@ hw15: $(OBJS)
 testall: test1 test2 test3 test4
 
 test1: hw15
-	./hw15 inputs/test1.txt > output1.txt
-	diff output1.txt expected/expected1.txt
+	hw15 inputs/test1.txt > output1.txt
+	FC output1.txt expected/expected1.txt
 
 test2: hw15
-	./hw15 inputs/test2.txt > output2.txt
-	diff output2.txt expected/expected2.txt
+	hw15 inputs/test2.txt > output2.txt
+	FC output2.txt expected/expected2.txt
 
 test3: hw15
-	./hw15 inputs/test3.txt > output3.txt
-	diff output3.txt expected/expected3.txt
+	hw15 inputs/test3.txt > output3.txt
+	FC output3.txt expected/expected3.txt
 
 test4: hw15
-	./hw15 inputs/test4.txt > output4.txt
-	diff output4.txt expected/expected4.txt
+	hw15 inputs/test4.txt > output4.txt
+	FC output4.txt expected/expected4.txt
 
 clean:
 	# remove all machine generated files
