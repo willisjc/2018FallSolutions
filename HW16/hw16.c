@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "hw16.h"
 
-
 /********** Do Not modify the file above this line, you can modify below ***********/
 #ifdef TEST_FREETREE
 // FreeBinaryTree
@@ -11,7 +10,12 @@
 
 void FreeBinaryTree(treeNode *root)
 {
-
+    if(root)
+    {
+        FreeBinaryTree(root->leftChild);
+        FreeBinaryTree(root->rightChild);
+        free(root);
+    }
 }
 
 #endif
@@ -19,13 +23,22 @@ void FreeBinaryTree(treeNode *root)
 #ifdef TEST_SEARCH
 // This function recursively searches for a given value in a tree
 // and returns the node which has that value
-treeNode* search(treeNode * tn, int value)
+treeNode *search(treeNode *tn, int value)
 {
-
+    if (tn)
+    {
+        if (value == tn->value)
+        {
+            return tn;
+        }
+        treeNode *rc = search(tn->rightChild, value);
+        treeNode *lc = search(tn->leftChild, value);
+        return (rc ? rc : lc);
+    }
+    return NULL;
 }
 
 #endif
-
 
 #ifdef TEST_SUBTREE
 /* This function checks if `needle` is subtree of `haystack`. By subtree, it means that all the values of
@@ -34,13 +47,28 @@ treeNode* search(treeNode * tn, int value)
 * as it recursively compares two Trees/subtrees from the treeNodes given as input.
 * It is consistent with  strstr function in C i.e. "strstr(const char \*haystack, const char \*needle)"
 */
-bool isSubTree(treeNode* haystack, treeNode *needle)
+bool isSubTree(treeNode *haystack, treeNode *needle)
 {
-
+    if (!needle || !haystack) {
+        return false;
+    }
+    treeNode * nRc = needle->rightChild;
+    treeNode * nLc = needle->leftChild;
+    treeNode * hRc = haystack->rightChild;
+    treeNode * hLc = haystack->leftChild;
+    if (nRc) {
+        if (!hRc) {
+            return false;
+        }
+    }
+    if (nLc) {
+        if (!hLc) {
+            return false;
+        }
+    }
+    return((haystack->value == needle->value) && (nLc?isSubTree(hLc, nLc):true) && (nRc?isSubTree(hRc, nRc):true));
 }
 #endif
-
-
 
 #ifdef TEST_CONTAINED
 // returns true if needle is contained in haystack
@@ -49,10 +77,17 @@ bool isSubTree(treeNode* haystack, treeNode *needle)
 // Please note that order of arguments are important
 // It is consistent with  strstr function in C i.e.
 // "strstr(const char \*haystack, const char \*needle)"
-bool isContained(treeNode * haystack, treeNode * needle)
+bool isContained(treeNode *haystack, treeNode *needle)
 {
-
+    if (!haystack || !needle)
+    {
+        return false;
+    }
+    if (needle->value == haystack->value)
+    {
+        return isSubTree(haystack,needle);
+    }
+    return (isContained(haystack->leftChild, needle) || isContained(haystack->rightChild, needle));
 }
-
 
 #endif

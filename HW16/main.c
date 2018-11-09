@@ -41,18 +41,23 @@ void PrintTn1ContainedTn2 (bool tn1_contained_tn2, bool tn2_contained_tn1)
 int main(int argc, char **argv)
 {
 	// if arguments are less than 3 you should not proceed further.
+	if (argc < 3) {
+		return EXIT_FAILURE;
+	}
 	// The program should then create 2 binary trees from input arguments
 	// Please check the functions given to you in README file for creating binary tree
+	treeNode * tn1 = BinaryTreeCreate(argv[1]);
+	treeNode * tn2 = BinaryTreeCreate(argv[2]);
 	// After this you will begin checking the relationship between the two trees
 	// 1. First check if `tn1` is contained in `tn2`.
+	bool t1 = isContained(tn2,tn1);
 	// 2. Second you should check if tree2 is contained in tree1,
+	bool t2 = isContained(tn1, tn2);
 	// 3. Pass the results to the print function given to your
+	PrintTn1ContainedTn2(t1,t2);
 	// remember to free all the memory.
-
-
-
-
-
+	FreeBinaryTree(tn1);
+	FreeBinaryTree(tn2);
 	return EXIT_SUCCESS;
 }
 
