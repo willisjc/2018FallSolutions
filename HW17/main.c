@@ -36,7 +36,30 @@ int main(int argc, char **argv)
 	 *  9. Free all memory.
 	 *
 	 */
-
-
+	if (argc < 2)
+	{
+		return EXIT_FAILURE;
+	}
+	fptr = fopen(argv[1], "r");
+	int n = 0;
+	while (fscanf(fptr, "%d", NULL))
+	{
+		n++;
+	}
+	fseek(fptr, 0, SEEK_SET);
+	int *a = malloc(sizeof(int) * n - 1);
+	int i;
+	for (i = 0; i < n - 1; i++)
+	{
+		fscanf(fptr, "%d", &a[i]);
+	}
+	int search_query;
+	fscanf(fptr, "%d", &search_query);
+	fclose(fptr);
+	tNode *node = CreateBST(a, a[0], 0, n - 2);
+	BinaryTreeInOrderPrint(node);
+	int dist = FindDistance(node, search_query, 0);
+	PrintDistance(dist);
+	free(a);
 }
 #endif
