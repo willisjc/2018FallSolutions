@@ -95,50 +95,27 @@ treeNode *CreateBST(int *a, int root, int start, int end)
 	 *
 	 */
         /////bad call
-        if (end < start)
+        if (start > end)
         {
                 return NULL;
         }
         //create node
-        tNode *node = malloc(sizeof(tNode));
+        treeNode *node = malloc(sizeof(treeNode));
         node->value = root;
-        //no children
-        if (end == start)
-        {
+        if (start == end) {
                 node->leftChild = NULL;
                 node->rightChild = NULL;
                 return node;
         }
-        //split array in twain and prepare values for recursion
-        int start2;
-        int end2;
-        int root1;
-        int root2;
-        start++;
-        //one child remaining
-        if (end == start)
-        {
-                if (a[start] > root)
-                {
-                        node->rightChild = CreateBST(a, a[start], start, end);
-                        node->leftChild = NULL;
-                }
-                else
-                {
-                        node->leftChild = CreateBST(a, a[start], start, end);
-                        node->rightChild = NULL;
-                }
+        int end1;
+        for (end1 = end; end > start && a[end1] > root; end1--);
+        if (a[start+1] > root) {
+                node->rightChild = CreateBST(a,a[start+1], start+1, (start+end+1) / 2);
+                node->leftChild = NULL;
                 return node;
         }
-        //2 children
-        start2 = (end + start) / 2 + 1;
-        end2 = end;
-        end = (end + start) / 2;
-        root1 = a[start];
-        root2 = a[start2];
-        //make children
-        node->leftChild = CreateBST(a, root1, start, end);
-        node->rightChild = CreateBST(a, root2, start2, end2);
+        node->leftChild = CreateBST(a,a[start+1], start+1, end1);
+        node->rightChild = CreateBST(a,a[end1+1], end1+1, end);
         return node;
 }
 #endif

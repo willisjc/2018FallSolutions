@@ -5,6 +5,13 @@
 
 //***** YOU NEED TO MODIFY main() FUNCTION BELOW *******//
 #ifdef TEST_MAIN
+void _FreeTree(treeNode * node) {
+        if (node) {
+                _FreeTree(node->leftChild);
+                _FreeTree(node->rightChild);
+                free(node);
+        }
+}
 int main(int argc, char **argv)
 {
 
@@ -40,11 +47,15 @@ int main(int argc, char **argv)
 	{
 		return EXIT_FAILURE;
 	}
-	fptr = fopen(argv[1], "r");
+	FILE *fptr = fopen(argv[1], "r");
 	int n = 0;
-	while (fscanf(fptr, "%d", NULL))
+	int x;
+	for (x = fgetc(fptr); x != EOF; x = fgetc(fptr))
 	{
-		n++;
+		if (x == '\n')
+		{
+			n++;
+		}
 	}
 	fseek(fptr, 0, SEEK_SET);
 	int *a = malloc(sizeof(int) * n - 1);
@@ -56,10 +67,11 @@ int main(int argc, char **argv)
 	int search_query;
 	fscanf(fptr, "%d", &search_query);
 	fclose(fptr);
-	tNode *node = CreateBST(a, a[0], 0, n - 2);
+	treeNode *node = CreateBST(a, a[0], 0, n - 2);
 	BinaryTreeInOrderPrint(node);
 	int dist = FindDistance(node, search_query, 0);
 	PrintDistance(dist);
 	free(a);
+	_FreeTree(node);
 }
 #endif
