@@ -63,7 +63,20 @@ ListNode* FindCentroid(TreeNode* x, TreeNode* y)
 #ifdef TEST_DIST
 int FindDist(TreeNode* x, TreeNode* y)
 {
-	//Same as previous HW
+	if (x->dimension != y->dimension)
+	{
+		fprintf(stderr, "FindDist called between nodes of different dimensions");
+		return EXIT_FAILURE;
+	}
+	int sum = 0;
+	int i;
+	int dif;
+	for (i = 0; i < x->dimension; i++)
+	{
+		dif = y->data[i] - x->data[i];
+		sum += dif * dif;
+	}
+	return sum;
 }
 #endif
 
@@ -84,7 +97,30 @@ ListNode* Fuse(ListNode* head, ListNode* fuse1, ListNode* fuse2)
 #ifdef TEST_CREATENODE
 ListNode* CreateNode(int n, int dim, int* arr)
 {
-	// Same as previous HW
+	ListNode *listNode = malloc(sizeof(ListNode));
+	if (!listNode)
+	{
+		fprintf(stderr, "ListNode malloc fail");
+		return NULL;
+	}
+	// check for malloc error
+	listNode->treenode = malloc(sizeof(TreeNode));
+	listNode->next = NULL;
+	TreeNode *tree = listNode->treenode;
+	// initialize dim
+	tree->dimension = dim;
+	// both left and right childern will be NULL
+	tree->left = NULL;
+	tree->right = NULL;
+	// allocate memory for data
+	tree->data = malloc(sizeof(int) * dim);
+	int i;
+	for (i = 0; i < dim; i++)
+	{
+		tree->data[i] = arr[i];
+	}
+	// return a ListNode
+	return listNode;
 }
 #endif
 
@@ -92,7 +128,26 @@ ListNode* CreateNode(int n, int dim, int* arr)
 #ifdef TEST_LINKEDLISTCREATE
 void LinkedListCreate(ListNode ** head, int n, int dim, FILE* fptr)
 {
-	// Same as previous HW
+	int i;
+	int *arr = malloc(sizeof(int) * dim);
+	for (i = 0; i < dim; i++)
+	{
+		fscanf(fptr, "%d", &arr[i]);
+	}
+	ListNode *tempNode = CreateNode(n, dim, arr);
+	*head = tempNode;
+	// use a loop to create nodes for the remaining elements of the list.
+	int j;
+	for (i = 1; i < n; i++)
+	{
+		for (j = 0; j < dim; j++)
+		{
+			fscanf(fptr, "%d", &arr[j]);
+		}
+		tempNode->next = CreateNode(n, dim, arr);
+		tempNode = tempNode->next;
+	}
+	free(arr);
 }
 #endif
 
