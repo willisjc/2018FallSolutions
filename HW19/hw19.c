@@ -6,31 +6,31 @@
 #include "hw19.h"
 
 // DO NOT MODIFY THIS FUNCTION
-void PrintAns(ListNode* head, ListNode* min1, ListNode* min2)
+void PrintAns(ListNode *head, ListNode *min1, ListNode *min2)
 {
 	int i;
 	i = 0;
-	while(i < head -> treenode->dimension)
+	while (i < head->treenode->dimension)
 	{
-		if(i == 0)
+		if (i == 0)
 			printf("(%d, ", min1->treenode->data[i]);
-		else if(i == head -> treenode->dimension-1)
+		else if (i == head->treenode->dimension - 1)
 			printf("%d) <-> ", min1->treenode->data[i]);
 		else
 			printf("%d, ", min1->treenode->data[i]);
-		i+=1;
+		i += 1;
 	}
 
 	i = 0;
-	while(i < head -> treenode->dimension)
+	while (i < head->treenode->dimension)
 	{
-		if(i == 0)
+		if (i == 0)
 			printf("(%d, ", min2->treenode->data[i]);
-		else if(i == head -> treenode->dimension-1)
+		else if (i == head->treenode->dimension - 1)
 			printf("%d)\n", min2->treenode->data[i]);
 		else
 			printf("%d, ", min2->treenode->data[i]);
-		i+=1;
+		i += 1;
 	}
 }
 
@@ -38,35 +38,70 @@ void PrintAns(ListNode* head, ListNode* min1, ListNode* min2)
 MODIFY BELOW THIS COMMENT
 */
 
-
 #ifdef TEST_CENT
-ListNode* FindCentroid(TreeNode* x, TreeNode* y)
+ListNode *FindCentroid(TreeNode *x, TreeNode *y)
 {
-	// Create a new node
-	// new -> treenode.left should be x
-	// new -> treenode.right should be y
-	// x -> treenode.data should be less than y -> treenode.data (refer to README)
-	
-	// Use a loop to average the data from the two parameters (x and y).
-	/*
-	EXAMPLE
-	Average x->treenode.data[0] and y->treenode.data[0] to new->treenode.data[0]
-	Average x->treenode.data[1] and y->treenode.data[1] to new->treenode.data[1]
-	and so on
-	*/
-
-	// Return the new node
+	//create new listnode
+	ListNode *new = malloc(sizeof(ListNode));
+	if (!new)
+	{
+		fprintf(stderr, "malloc fail for ListNode in FindCentroid");
+		return NULL;
+	}
+	//listnode->next
+	new->next = NULL;
+	//listnode->treenode
+	new->treenode = malloc(sizeof(TreeNode));
+	if (!new->treenode)
+	{
+		free(new);
+		fprintf(stderr, "malloc fail for treenode in FindCentroid");
+		return NULL;
+	}
+	//listnode->treenode->data
+	(new->treenode)->data = malloc(sizeof(int) * (x->dimension));
+	if (!new->treenode)
+	{
+		free(new->treenode);
+		free(new);
+		fprintf(stderr, "malloc fail for data in FindCentroid");
+		return NULL;
+	}
+	//listnode->treenode->dimension
+	(new->treenode)->dimension = x->dimension;
+	//listnode->treenode->data = (x+y)/2
+	int xsum = 0;
+	int ysum = 0;
+	int i;
+	for (i = 0; i < x->dimension; i++)
+	{
+		xsum += (x->data[i] * x->data[i]);
+		ysum += (y->data[i] * y->data[i]);
+		(new->treenode)->data[i] = (x->data[i] + y->data[i]) / 2;
+	}
+	//min(x,y) = left, max=right
+	if (xsum < ysum)
+	{
+		(new->treenode)->left = x;
+		(new->treenode)->right = y;
+	}
+	else
+	{
+		(new->treenode)->left = y;
+		(new->treenode)->right = x;
+	}
+	//return node
+	return new;
 }
 #endif
 
-
 #ifdef TEST_DIST
-int FindDist(TreeNode* x, TreeNode* y)
+int FindDist(TreeNode *x, TreeNode *y)
 {
 	if (x->dimension != y->dimension)
 	{
 		fprintf(stderr, "FindDist called between nodes of different dimensions");
-		return EXIT_FAILURE;
+		return -1;
 	}
 	int sum = 0;
 	int i;
@@ -80,22 +115,34 @@ int FindDist(TreeNode* x, TreeNode* y)
 }
 #endif
 
-
 #ifdef TEST_FUSE
-ListNode* Fuse(ListNode* head, ListNode* fuse1, ListNode* fuse2)
+ListNode *Fuse(ListNode *head, ListNode *fuse1, ListNode *fuse2)
 {
-
 	// Create a new ListNode element using findCentroid function.
+	ListNode *listNode = FindCentroid(fuse1->treenode, fuse2->treenode);
 	// The new->treenode.data will hold the averaged values of the two parameters' data (fuse1, and fuse2)
 	// add the new ListNode to the list.
+	listNode->next = fuse1->next;
+	ListNode *node = fuse1 == head ? listNode : head;
+	while (node)
+	{
+		if (node->next == fuse1)
+		{
+			node->next = listNode;
+		}
+		if (node->next == fuse2)
+		{
+			node->next = (node->next)->next;
+		}
+		node = node->next;
+	}
+	return fuse1 == head ? listNode : head;
 	// remove the fuse1 and fuse2 from the list. (Do NOT free)
 	// you may want to return head from this function (depending on your implementation)
 }
 #endif
-
-
 #ifdef TEST_CREATENODE
-ListNode* CreateNode(int n, int dim, int* arr)
+ListNode *CreateNode(int n, int dim, int *arr)
 {
 	ListNode *listNode = malloc(sizeof(ListNode));
 	if (!listNode)
@@ -124,9 +171,8 @@ ListNode* CreateNode(int n, int dim, int* arr)
 }
 #endif
 
-
 #ifdef TEST_LINKEDLISTCREATE
-void LinkedListCreate(ListNode ** head, int n, int dim, FILE* fptr)
+void LinkedListCreate(ListNode **head, int n, int dim, FILE *fptr)
 {
 	int i;
 	int *arr = malloc(sizeof(int) * dim);
@@ -152,14 +198,66 @@ void LinkedListCreate(ListNode ** head, int n, int dim, FILE* fptr)
 #endif
 
 #ifdef TEST_CLUSTER
-void MakeCluster(ListNode** head)
+void MakeCluster(ListNode **head)
 {
 	// Walk through the linked list.
 	// find pair of nodes with minimum distance.
 	// fuse the two nodes into one node.
 	// call print function
 	// repeat till one node is remaining.
+	ListNode *node1 = NULL;
+	ListNode *node2 = NULL;
+	ListNode *min1 = NULL;
+	ListNode *min2 = NULL;
+	int mindist;
+	int dist;
+	int i;
+	while ((*head)->next)
+	{
+		node1 = *head;
+		//find closest nodes
+		while (node1)
+		{
+			node2 = node1->next;
+			while (node2)
+			{
+				dist = FindDist(node1->treenode, node2->treenode);
+				if (!min1 || !min2)
+				{
+					mindist = dist;
+					min1 = node1;
+					min2 = node2;
+				}
+				if (dist < mindist)
+				{
+					mindist = dist;
+					min1 = node1;
+					min2 = node2;
+				}
+				node2 = node2->next;
+			}
+			node1 = node1->next;
+		}
+		*head = Fuse(*head, min1, min2);
+		
+		i = 0;
+		while (min1->treenode->data[i] == min2->treenode->data[i]) {
+			i++;
+		}
+		if (min1->treenode->data[i] > min2->treenode->data[i]) {
+			PrintAns(*head,min2,min1);
+		}
+		else {
+			PrintAns(*head,min1,min2);
+		}
+		//min(x,y) = left, max=right
+		
+		ListNode *charon = min1;
+		min1 = NULL;
+		free(charon);
+		ListNode *charon1 = min2;
+		min2 = NULL;
+		free(charon1);
+	}
 }
 #endif
-
-
