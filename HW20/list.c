@@ -62,6 +62,10 @@ ListNode * MergeListNode(ListNode * head)
     new merged TreeNode. This function should maintain the same aforementioned order.
     Please read Huffman coding for understanding the functionality of this function.
   */
-
+  head->tnptr = Tree_merge(head->next->tnptr, head->tnptr);
+  ListNode * node = head->next;
+  head->next = head->next->next;
+  free(node);
+  return head;
 }
 #endif
